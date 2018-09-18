@@ -6,9 +6,7 @@ const config = require('./config');
 const findUser = require('./app/routes/find-user');
 const auth = require('./app/routes/auth');
 const verifyToken = require('./app/modules/check-token');
-
-const app = express();
-
+const app = require('./app/modules/app');
 const port = process.env.PORT || 8080;
 
 mongoose.connect(config.database, { useNewUrlParser: true });
@@ -22,12 +20,13 @@ app
 const apiRoutes = express.Router();
 
 apiRoutes
+  .post('/authenticate', auth)
   .use(verifyToken)
   .get('/', (req, res) => {
     res.send({ message: 'Welcome to the coolest API on earth!' });
   })
-  .get('/users', findUser)
-  .post('/authenticate', auth);
+  .get('/users', findUser);
+
 
 app.use('/api', apiRoutes);
 

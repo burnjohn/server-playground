@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+
 const errorResp = {
   success: false,
   message: 'Authentication failed. User not found.',
@@ -8,11 +9,13 @@ const errorResp = {
 
 const passwMatches = (passw1, hash) => bcrypt.compareSync(passw1, hash);
 
-//TODO: get 'playground' from app.superSecret
-const generateToken = payload =>
-  jwt.sign(payload, 'playground', {
-    expiresIn : 60*60*24
+const generateToken = payload => {
+  const secretKey = app.get('superSecret');
+
+  return jwt.sign(payload, secretKey, {
+    expiresIn: 60 * 60 * 24
   });
+};
 
 const authenticate = (req, res) => {
   User.findOne({ name: req.body.name }, onFind);
@@ -28,7 +31,6 @@ const authenticate = (req, res) => {
     const payload = {
       admin: user.admin,
     };
-
 
     const token = generateToken(payload);
 
